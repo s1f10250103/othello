@@ -34,7 +34,9 @@ export default function Home() {
     }
     const newBoard = structuredClone(board);
     newBoard[rowIndex][cellIndex] = turn;
+
     let flippedCount = 0;
+
     for (const direction of directions) {
       const dx = direction[0];
       const dy = direction[1];
@@ -68,8 +70,34 @@ export default function Home() {
     setBoard(newBoard);
   };
 
+  let blackCount = 0;
+  let whiteCount = 0;
+
+  board.forEach((row) => {
+    row.forEach((num) => {
+      if (num === 1) {
+        blackCount++;
+      }
+      if (num === 2) {
+        whiteCount++;
+      }
+    });
+  });
+
   return (
     <div className={styles.container}>
+      <div className={styles.scoreBoard}>
+        <div className={styles.turn}>手番: {turn === 1 ? '黒' : '白'}</div>
+        <button
+          onClick={() => setTurn(turn === 1 ? 2 : 1)}
+          style={{ marginTop: '0px', padding: '5px 10px', cursor: 'pointer' }}
+        >
+          パス（スキップ）
+        </button>
+        <div>黒: {blackCount}</div>
+        <div style={{ marginLeft: '10px' }}>白: {whiteCount}</div>
+      </div>
+
       <div className={styles.board}>
         {board.map((row, rowIndex) =>
           row.map((color, cellIndex) => (
