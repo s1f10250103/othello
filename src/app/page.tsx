@@ -29,15 +29,17 @@ export default function Home() {
   const [turn, setTurn] = useState(1);
 
   const handleCellClick = (rowIndex: number, cellIndex: number) => {
+    if (board[rowIndex][cellIndex] !== 0) {
+      return;
+    }
     const newBoard = structuredClone(board);
     newBoard[rowIndex][cellIndex] = turn;
-    setTurn(turn === 1 ? 2 : 1);
-    setBoard(newBoard);
+    let flippedCount = 0;
     for (const direction of directions) {
       const dx = direction[0];
       const dy = direction[1];
-      const x = cellIndex + dx;
-      const y = rowIndex + dy;
+      let x = cellIndex + dx;
+      let y = rowIndex + dy;
       const stonesToFlip = [];
       while (x >= 0 && x < 8 && y >= 0 && y < 8) {
         const color = newBoard[y][x];
@@ -46,12 +48,24 @@ export default function Home() {
         }
         if (color === turn) {
           if (stonesToFlip.length > 0) {
-            // ここで裏返し処理を実行
+            for (const stones of stonesToFlip) {
+              newBoard[stones[0]][stones[1]] = turn;
+            }
+            flippedCount += stonesToFlip.length;
           }
           break;
         }
+        stonesToFlip.push([y, x]);
+        x += dx;
+        y += dy;
       }
     }
+
+    if (flippedCount === 0) {
+      return;
+    }
+    setTurn(turn === 1 ? 2 : 1);
+    setBoard(newBoard);
   };
 
   return (
